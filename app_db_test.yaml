@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  app_db_test:
+    container_name: app_db
+    restart: always
+    build: ./
+    command: ./bin/webserver
+    expose:
+      - "8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/postgres?sslmode=disable"
+      DB_PASSWORD: "postgres"
+    ports:
+      - "8080:8080"
+  db:
+    container_name: db
+    restart: always
+    image: postgres:latest
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 1s
+      timeout: 1s
+      retries: 5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./postgres-test/:/docker-entrypoint-initdb.d/
+    ports:
+      - "5432:5432"
+volumes:
+  db-data:

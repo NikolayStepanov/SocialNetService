@@ -1,0 +1,244 @@
+basePath: /
+definitions:
+  http.DeleteUserRequest:
+    properties:
+      target_id:
+        type: string
+    type: object
+  http.DeleteUserResponse:
+    properties:
+      name:
+        type: string
+    type: object
+  http.FriendInformation:
+    properties:
+      age:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  http.FriendsResponse:
+    properties:
+      friends:
+        items:
+          $ref: '#/definitions/http.FriendInformation'
+        type: array
+    type: object
+  http.MakeFriendsRequest:
+    properties:
+      source_id:
+        type: string
+      target_id:
+        type: string
+    type: object
+  http.UserCreateRequest:
+    properties:
+      age:
+        type: string
+      friends:
+        items:
+          type: integer
+        type: array
+      name:
+        type: string
+    type: object
+  http.UserCreateResponse:
+    properties:
+      id:
+        type: string
+    type: object
+  http.UserInformationResponse:
+    properties:
+      age:
+        type: integer
+      friends:
+        $ref: '#/definitions/http.FriendsResponse'
+      name:
+        type: string
+    type: object
+  http.UserUpdateRequest:
+    properties:
+      new age:
+        type: string
+      new name:
+        type: string
+    type: object
+  service.ErrResponse:
+    properties:
+      code:
+        description: application-specific error code
+        type: integer
+      error:
+        description: application-level error message, for debugging
+        type: string
+      status:
+        description: user-level status message
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API Server for SocialNet Application
+  title: SocialNet Service
+  version: "1.0"
+paths:
+  /{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Getting information about the user
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.UserInformationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/service.ErrResponse'
+      summary: GetUserInformation
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: User information update
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: json update information user
+        in: body
+        name: updateUserRequest
+        schema:
+          $ref: '#/definitions/http.UserUpdateRequest'
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/service.ErrResponse'
+      summary: UpdateUser
+      tags:
+      - Users
+  /create:
+    post:
+      consumes:
+      - application/json
+      description: Сreating a new user
+      parameters:
+      - description: json information user
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/http.UserCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.UserCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/service.ErrResponse'
+      summary: CreateUser
+      tags:
+      - Users
+  /friends/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Getting information about user's friends
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.FriendsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/service.ErrResponse'
+      summary: GetAllFriendsByID
+      tags:
+      - Friends
+  /make_friends:
+    post:
+      consumes:
+      - application/json
+      description: Сreating a new city entry
+      parameters:
+      - description: json SourceID,TargetID make friends
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/http.MakeFriendsRequest'
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/service.ErrResponse'
+      summary: MakeFriends
+      tags:
+      - Friends
+  /user/:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user information
+      parameters:
+      - description: json delete targetID User
+        in: body
+        name: requestDelete
+        required: true
+        schema:
+          $ref: '#/definitions/http.DeleteUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.DeleteUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/service.ErrResponse'
+      summary: UserDelete
+      tags:
+      - Users
+swagger: "2.0"
